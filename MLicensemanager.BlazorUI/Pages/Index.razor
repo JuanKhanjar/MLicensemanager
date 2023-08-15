@@ -1,0 +1,123 @@
+﻿@page "/"
+@using MLicensemanager.BusinessCore;
+@using MLicensemanager.UseCases.CustomerUCases.UCIntefaces;
+@inject IGetCustomerWithGroupsAndLicensesUC _IGetCustomerWithGroupsAndLicensesUC
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+<input type="number" @bind-value="CustomerId" />
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+@if (customer != null)
+{
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Customer Information</h5>
+            <p class="card-text">Name: @customer.Title</p>
+        </div>
+    </div>
+
+    <h4 class="mt-2 p-2">Groups :( @customer.CustomerGroups.Count() ) </h4>
+    <div class="mt-3">
+        <h4>Total Price for All Groups:</h4>
+        <p class="fw-bolder text-success font-monospace p-1">@customer.CustomerGroups.Sum(cg => cg.Group.GroupProducts.Sum(gp => gp.Product.Price)).ToString("c")</p>
+    </div>
+    @foreach (var group in customer.CustomerGroups)
+    {
+        <div class="card mt-3">
+            <div class="card-header" role="button" @onclick="() => ToggleCollapse(group.GroupID)">
+                <span class="arrow-down text-right" id="arrow-@group.GroupID"></span>
+                <h5 class="mb-0 fw-bolder text-primary">EAN: @group.Group.EAN - Group name: @group.Group.GroupName</h5>
+                <button class="btn btn-primary btn-sm" @onclick="() => EditGroup(group)">Edit</button>
+            </div>
+            <div id="group-@group.GroupID" class="collapse">
+                <div class="card-body">
+
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <h5 class="card-title">EAN: @group.Group.EAN</h5>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Cost</th>
+                                        <th>Quantity</th>
+                                        <th>Summary</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @*<tr>
+                                        <td colspan="3" class="text-right">Total Group Price:</td>
+                                        <td class="text-success font-monospace fw-bolder">@group.Group.GroupProducts.Sum(gp => gp.Product.Price).ToString("c")</td>
+                                    </tr>*@
+                                    @foreach (var productGroup in group.Group.GroupProducts.GroupBy(gp => gp.Product.Name))
+                                    {
+                                        var product = productGroup.First().Product;
+                                        var quantity = productGroup.Count();
+                                        var totalPrice = productGroup.Sum(gp => gp.Product.Price);
+
+                                        <tr>
+                                            <td>@product.Name</td>
+                                            <td>@product.Price.ToString("c")</td>
+                                            <td>@quantity</td>
+                                            <td>@totalPrice.ToString("c")</td>
+                                        </tr>
+                                    }
+                                    <tr style="background-color:#FFFAFA;">
+                                        <td colspan="3" class="text-dark fw-bold">Total Group Price:</td>
+                                        <td class="text-success font-monospace fw-bolder">@group.Group.GroupProducts.Sum(gp => gp.Product.Price).ToString("c")</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="mt-3">
+        <h4>Total Price for All Groups:</h4>
+        <p class="fw-bolder font-monospace p-1">@customer.CustomerGroups.Sum(cg => cg.Group.GroupProducts.Sum(gp => gp.Product.Price)).ToString("c")</p>
+    </div>
+}
+else
+{
+    <p>Loading...</p>
+}
+@code {
+    [Parameter]
+    public int CustomerId { get; set; } = 1;
+
+    private Customer customer { get; set; } = new Customer();
+
+    protected override async Task OnInitializedAsync()
+    {
+        customer = await _IGetCustomerWithGroupsAndLicensesUC.ExecuteAsync(CustomerId);
+    }
+
+    private async Task ToggleCollapse(int groupId)
+    {
+        await JSRuntime.InvokeVoidAsync("toggleCollapses", groupId);
+    }
+
+    private CustomerGroup editingGroup;
+    private List<(Product Product, int Quantity)> groupProducts = new List<(Product, int)>();
+
+    private void EditGroup(CustomerGroup group)
+    {
+        editingGroup = group;
+        // Assuming you have a method to fetch group products from your data source
+        groupProducts = group.Group.GroupProducts
+            .GroupBy(gp => gp.Product)
+            .Select(pg => (Product: pg.Key, Quantity: pg.Count()))
+            .ToList();
+    }
+}
+
