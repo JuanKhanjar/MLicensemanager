@@ -22,4 +22,8 @@
     <ProjectReference Include="..\MLicensemanager.SqlServerPlug\MLicensemanager.SqlServerPlug.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Shared\Controls\" />
+  </ItemGroup>
+
 </Project>

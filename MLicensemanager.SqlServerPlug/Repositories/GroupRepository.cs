@@ -10,20 +10,23 @@ using System.Threading.Tasks;
 
 namespace MLicensemanager.SqlServerPlug.Repositories
 {
-    public class CustomerRepository : ICustomerRepository
+    public class GroupRepository : IGroupRepository
     {
         private readonly LMSDbContext _dbContext;
 
-        public CustomerRepository(LMSDbContext dbContext)
+        public GroupRepository(LMSDbContext dbContext)
         {
             _dbContext = dbContext;
         }
-
-        public async Task<Customer> GetCustomerByIdAsync(int customerId)
+        public async Task<List<Group>> GetGroupsWithProductsByCustomerId(int customerId)
         {
-            return await _dbContext.Customers
-                .Include(c => c.Groups)
-                .FirstOrDefaultAsync(c => c.CustomerId == customerId);
+            var groupsWithProducts = await _dbContext.Groups
+                .Include(g => g.GroupProducts)
+                    .ThenInclude(gp => gp.Product)
+                .Where(g => g.CustomerId == customerId)
+                .ToListAsync();
+
+            return groupsWithProducts;
         }
     }
 }

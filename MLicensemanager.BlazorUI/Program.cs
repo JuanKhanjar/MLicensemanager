@@ -4,9 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using MLicensemanager.BlazorUI.Data;
 using MLicensemanager.SqlServerPlug.Data;
 using MLicensemanager.SqlServerPlug.Repositories;
-using MLicensemanager.UseCases.CustomerUCases;
-using MLicensemanager.UseCases.CustomerUCases.UCIntefaces;
-using MLicensemanager.UseCases.PluginsIntefaces;
+using MLicensemanager.UseCases.CustomersUC;
+using MLicensemanager.UseCases.CustomersUC.CustomerUCIntefaces;
+using MLicensemanager.UseCases.GroupsUC;
+using MLicensemanager.UseCases.GroupsUC.GroupUCIntefaces;
+using MLicensemanager.UseCases.PluginsInterfaces;
+using MLicensemanager.UseCases.ProductsUC;
+using MLicensemanager.UseCases.ProductsUC.PorductsUCInterfaces;
 
 namespace MLicensemanager.BlazorUI
 {
@@ -21,14 +25,25 @@ namespace MLicensemanager.BlazorUI
             builder.Services.AddServerSideBlazor();
             builder.Services.AddSingleton<WeatherForecastService>();
 
-            builder.Services.AddDbContext<CLDbContext>(options =>
+            builder.Services.AddDbContext<LMSDbContext>(options =>
               options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-            builder.Services.AddTransient<IGetCustomerWithGroupsAndLicensesUC, GetCustomerWithGroupsAndLicensesUC>();
+            builder.Services.AddTransient<IGetCustomerByIdAsyncUC, GetCustomerByIdAsyncUC>();
+
+            builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+            builder.Services.AddTransient<IGetGroupsWithProductsByCustomerIdUC, GetGroupsWithProductsByCustomerIdUC>();
+
+            builder.Services.AddScoped<IProductRepositoy, ProductRepositoy>();
+            builder.Services.AddTransient<IGetAllProductFromDbAsyncUC, GetAllProductFromDbAsyncUC>();
+            builder.Services.AddTransient<IGetProductsNotInListAsyncUC, GetProductsNotInListAsyncUC>();
+            builder.Services.AddTransient<IGetProductsForCustomerAndGroupAsyncUC, GetProductsForCustomerAndGroupAsyncUC>();
+
+
 
             var app = builder.Build();
 
+            // Configure the HTTP request pipeline.
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {

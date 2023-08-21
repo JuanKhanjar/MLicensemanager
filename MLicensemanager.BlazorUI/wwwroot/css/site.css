@@ -119,3 +119,12 @@ a, .btn-link {
     font-family: 'FontAwesome';
     margin-right: 5px;
 }
+
+
+/* Add this to your CSS stylesheet */
+.disabled {
+    /* Customize the styling for the disabled row */
+    opacity: 0.5; /* Example: Reduce opacity for a disabled appearance */
+    pointer-events: none; /* Disable mouse interactions */
+    /* Add any additional styling here */
+}
