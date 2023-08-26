@@ -10,5 +10,6 @@ namespace MLicensemanager.UseCases.PluginsInterfaces
     public interface IGroupRepository
     {
         Task<List<Group>> GetGroupsWithProductsByCustomerId(int customerId);
+        Task<Group> GetGroupWithProductsByCustomerIdAndGroupId(int customerId, int groupId);
     }
 }

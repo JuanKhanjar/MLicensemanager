@@ -1,13 +1,4 @@
-﻿// site.js
-//function toggleCollapses(groupId) {
-//    var element = document.getElementById('group-' + groupId);
-//    if (element.style.display === 'none') {
-//        element.style.display = 'block';
-//    } else {
-//        element.style.display = 'none';
-//    }
-//}
-
+﻿
 
 function toggleCollapses(groupId) {
     var element = document.getElementById('group-' + groupId);
@@ -92,10 +83,33 @@ window.addProductToCustomerTable = function (productId) {
 
         // Append the cloned row to the customer products table
         document.querySelector('#customerProductsTable tbody').appendChild(newRow);
+    };
+
+
+    // In a .js or .ts file (e.g., CustomFunctions.js)
+    
+}
+
+function toggleGroupDetails(groupId) {
+    var groupDetailsDiv = document.getElementById(`group-details-${groupId}`);
+    if (groupDetailsDiv) {
+        if (groupDetailsDiv.style.display === "none") {
+            groupDetailsDiv.style.display = "block";
+        } else {
+            groupDetailsDiv.style.display = "none";
+        }
     }
 };
-
-
-
-
-
+// In a JavaScript file (e.g., custom.js)
+function showConfirmationDialog() {
+    return Swal.fire({
+        title: 'Confirmation',
+        text: 'Are you sure you want to change the group name?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        return result.isConfirmed;
+    });
+}

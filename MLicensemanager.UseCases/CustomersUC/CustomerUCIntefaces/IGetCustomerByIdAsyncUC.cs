@@ -4,6 +4,6 @@ namespace MLicensemanager.UseCases.CustomersUC.CustomerUCIntefaces
 {
     public interface IGetCustomerByIdAsyncUC
     {
-        Task<Customer> ExecuteAsync(int customerId);
+        Task<Customer?> ExecuteAsync(int customerId);
     }
 }

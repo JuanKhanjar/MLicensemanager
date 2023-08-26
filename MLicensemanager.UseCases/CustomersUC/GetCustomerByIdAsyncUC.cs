@@ -1,12 +1,6 @@
-﻿using Microsoft.VisualBasic;
-using MLicensemanager.BusinessCore.Entities;
+﻿using MLicensemanager.BusinessCore.Entities;
 using MLicensemanager.UseCases.CustomersUC.CustomerUCIntefaces;
 using MLicensemanager.UseCases.PluginsInterfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MLicensemanager.UseCases.CustomersUC
 {
@@ -18,7 +12,12 @@ namespace MLicensemanager.UseCases.CustomersUC
         {
             _customerRepository = customerRepository;
         }
-        public async Task<Customer> ExecuteAsync(int customerId)
+        /// <summary>
+        /// Get A Spesific Customer With all his Gorups by customerId
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns>an object of Customer</returns>
+        public async Task<Customer?> ExecuteAsync(int customerId)
         {
             return await _customerRepository.GetCustomerByIdAsync(customerId);
         }

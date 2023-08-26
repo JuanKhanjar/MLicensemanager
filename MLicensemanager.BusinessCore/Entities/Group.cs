@@ -14,7 +14,7 @@ namespace MLicensemanager.BusinessCore.Entities
 
         [Required(ErrorMessage = "Group Name is required")]
         [StringLength(100, ErrorMessage = "Group Name must be at most 100 characters")]
-        public required string GroupName { get; set; }
+        public  string GroupName { get; set; }
 
         [StringLength(20, ErrorMessage = "EAN must be at most 20 characters")]
         public string EAN { get; set; }

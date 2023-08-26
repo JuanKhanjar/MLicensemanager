@@ -15,16 +15,16 @@ namespace MLicensemanager.BusinessCore.Entities
 
         [Required(ErrorMessage = "Customer Name is required")]
         [StringLength(100, ErrorMessage = "Customer Name must be at most 100 characters")]
-        public required string CustomerName { get; set; }
+        public string CustomerName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Address is required")]
         [StringLength(100, ErrorMessage = "Address must be at most 100 characters")]
-        public required string Address { get; set; }
+        public string Address { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Email is required")]
         [StringLength(100, ErrorMessage = "Email must be at most 100 characters")]
         [EmailAddress(ErrorMessage = "Email is not a valid email address")]
-        public required string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         public virtual ICollection<Group> Groups { get; set; }
 

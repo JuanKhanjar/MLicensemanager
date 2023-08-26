@@ -1,0 +1,113 @@
+﻿@page "/customer/{CustomerId:int}"
+<PageTitle>Customer</PageTitle>
+@inject IGetCustomerByIdAsyncUC _CustomerByIdUC
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<h3>Customer Information</h3>
+
+@if (Customer != null)
+{
+    <div class="card">
+        <div class="card-body">
+            <p class="card-text">Customer ID: @Customer.CustomerId</p>
+            <p class="card-text">Name: @Customer.CustomerName</p>
+            <p class="card-text">Address: @Customer.Address</p>
+            <p class="card-text">Email: @Customer.Email</p>
+            <!-- Other customer properties -->
+        </div>
+    </div>
+
+
+    @if (Customer.Groups != null && Customer.Groups.Any())
+    {
+        <h4>Groups (@Customer.Groups.Count()) / @Customer.Groups.CalculateSubtotal().ToString("c2")</h4>
+        <div class="card">
+            @foreach (var group in Customer.Groups)
+            {
+                <div class="mb-2">
+                    <div class="card">
+                        
+                        <div class="card-header">
+                            <button class="btn btn-link" @onclick="() => ToggleProducts(group.GroupId)">
+                                @group.GroupName
+                            </button>
+                            <p>@group.EAN</p>
+                        </div>
+                        
+                        <div id="group-details-@group.GroupId" class="card-body">
+                            
+                            <table class="table table-bordered">
+                                <!-- Product details -->
+
+                                <thead>
+                                    <tr>
+                                        <th>Product ID</th>
+                                        <th>Product Name</th>
+                                        <th>Remaining</th>
+                                        <th>Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var product in group.GroupProducts)
+                                    {
+                                        <tr>
+                                            <td>@product.ProductId</td>
+                                            <td>@product.Product.ProductName</td>
+                                            <td>@product.Quantity</td>
+                                            <td>@product.Product.Price</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr class="">
+                                        <td colspan="3">Subtotal</td>
+                                        <td> <div>Total @group.CalculateTotalPrice().ToString("c2")</div></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <div>
+                                <NavLink class=" nav-link" href="@($"/group/{Customer.CustomerId}/{@group.GroupId}")">
+                                <button class="btn btn-outline-success">Edit</button>
+                                </NavLink>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>No groups found for this customer.</p>
+    }
+}
+else
+{
+    <p>Customer not found.</p>
+}
+
+@code {
+
+    [Parameter]
+    public int CustomerId { get; set; }
+
+    private Customer? Customer { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        if (CustomerId > 0)
+        {
+            Customer = await _CustomerByIdUC.ExecuteAsync(CustomerId);
+        }
+    }
+    private async Task ToggleProducts(int groupId)
+    {
+        await JSRuntime.InvokeVoidAsync("toggleGroupDetails", groupId);
+    }
+}
+
+@*
+    when a customer login we recieve the CustomerId as parameter 
+    based on that we can retrive all his Group 
+*@

@@ -13,9 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{3A37
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MLicensemanager.SqlServerPlug", "MLicensemanager.SqlServerPlug\MLicensemanager.SqlServerPlug.csproj", "{0D7A7075-F84D-4615-9AB8-C3C898C4D034}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp2", "ConsoleApp2\ConsoleApp2.csproj", "{8F50128C-080C-4A7C-B1C2-5E33A69DF410}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestMyFunctionsConsoleApp", "ConsoleApp2\TestMyFunctionsConsoleApp.csproj", "{8F50128C-080C-4A7C-B1C2-5E33A69DF410}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MLicensemanager.ServiceCLS", "MLicensemanager.ServiceCLS\MLicensemanager.ServiceCLS.csproj", "{490BCBC4-7E76-41E0-AF09-576375596AD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MLicensemanager.ServiceCLS", "MLicensemanager.ServiceCLS\MLicensemanager.ServiceCLS.csproj", "{490BCBC4-7E76-41E0-AF09-576375596AD4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

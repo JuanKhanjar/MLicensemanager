@@ -128,3 +128,52 @@ a, .btn-link {
     pointer-events: none; /* Disable mouse interactions */
     /* Add any additional styling here */
 }
+
+
+/* Style for the clickable card */
+.group-card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+/* Style for the table */
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .product-table th, .product-table td {
+        padding: 8px;
+        border-bottom: 1px solid #ccc;
+    }
+
+
+/* sweet-alert-custom.css */
+
+.swal-title {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.swal-text {
+    font-size: 16px;
+    color: #555;
+}
+
+.swal-button {
+    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+}
+
+    .swal-button:hover {
+        background-color: #0056b3;
+    }

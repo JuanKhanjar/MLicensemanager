@@ -4,7 +4,7 @@ using MLicensemanager.BusinessCore.Extensions;
 using MLicensemanager.ServiceCLS;
 using MLicensemanager.SqlServerPlug.Data;
 
-namespace ConsoleApp2
+namespace TestMyFunctionsConsoleApp
 {
     public class Program
     {

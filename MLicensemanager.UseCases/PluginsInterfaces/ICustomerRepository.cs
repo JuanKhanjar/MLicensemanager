@@ -9,6 +9,6 @@ namespace MLicensemanager.UseCases.PluginsInterfaces
 {
     public interface ICustomerRepository
     {
-        Task<Customer> GetCustomerByIdAsync(int customerId);
+        Task<Customer?> GetCustomerByIdAsync(int customerId);
     }
 }

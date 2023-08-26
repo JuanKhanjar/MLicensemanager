@@ -25,14 +25,14 @@ namespace MLicensemanager.BlazorUI
             builder.Services.AddServerSideBlazor();
             builder.Services.AddSingleton<WeatherForecastService>();
 
-            builder.Services.AddDbContext<LMSDbContext>(options =>
+            builder.Services.AddDbContextFactory<LMSDbContext>(options =>
               options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+            builder.Services.AddTransient<ICustomerRepository, CustomerRepository>();
             builder.Services.AddTransient<IGetCustomerByIdAsyncUC, GetCustomerByIdAsyncUC>();
 
             builder.Services.AddScoped<IGroupRepository, GroupRepository>();
-            builder.Services.AddTransient<IGetGroupsWithProductsByCustomerIdUC, GetGroupsWithProductsByCustomerIdUC>();
+            builder.Services.AddTransient<IGetGroupWithProductsByCustomerIdAndGroupIdUC, GetGroupWithProductsByCustomerIdAndGroupIdUC>();
 
             builder.Services.AddScoped<IProductRepositoy, ProductRepositoy>();
             builder.Services.AddTransient<IGetAllProductFromDbAsyncUC, GetAllProductFromDbAsyncUC>();

@@ -39,9 +39,9 @@ namespace MLicensemanager.SqlServerPlug.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
-            string connectionString = "Server=JUANWIN\\SQLEXPRESS;Database=CLMDataBase;Trusted_Connection=True;TrustServerCertificate=Yes;";
+            //string connectionString = "Server=JUANWIN\\SQLEXPRESS;Database=CLMDataBase;Trusted_Connection=True;TrustServerCertificate=Yes;";
 
-            optionsBuilder.UseSqlServer(connectionString);
+            //optionsBuilder.UseSqlServer(connectionString);
         }
     }
 

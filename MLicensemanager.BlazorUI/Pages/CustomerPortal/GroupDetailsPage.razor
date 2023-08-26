@@ -1,0 +1,389 @@
+﻿@page "/group/{CustomerId:int}/{GroupId:int}"
+@inject IGetGroupWithProductsByCustomerIdAndGroupIdUC _IGetGroupWithProductsByCustomerIdAndGroupIdUC
+@inject IGetAllProductFromDbAsyncUC _IGetAllProductFromDbAsyncUC
+@using System.Linq
+@inject Microsoft.JSInterop.IJSRuntime JSRuntime
+
+<PageTitle>Group Details</PageTitle>
+
+<p>Customer Id:@CustomerId</p>
+<p>Group Id:@GroupId</p>
+<!-- Form to Change Group Name -->
+<div class="row m-4 d-flex justify-content-center align-baseline">
+    <div class="">
+        <div class="card-body">
+            <EditForm Model="@group" OnValidSubmit="ChangeGroupName">
+                <DataAnnotationsValidator />
+                <div class="mb-3">
+                    <label for="newGroupName" class="form-label">New Group Name</label>
+                    <InputText id="newGroupName" class="form-control" @bind-Value="group.GroupName" />
+                    <ValidationMessage For="@(() => group.GroupName)" />
+                </div>
+                <div>
+                    <label>EAN</label>
+                    <input type="text" @bind="@group.EAN" disabled />
+                </div>
+                <div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </EditForm>
+            
+        </div>
+    </div>
+</div>
+@if (customerProductsDto != null)
+{
+    <!-- Customer Product -->
+    <div class="card d-flex justify-content-between mb-2">
+        <table class="table table-borderless align-baseline">
+
+            <thead>
+                <tr>
+                    <th hidden>Product ID</th>
+                    <th>Product Name</th>
+                    <th>Remaining</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in customerProductsDto)
+                {
+                    <tr>
+                        <td hidden>@product.ProductId</td>
+                        <td>@product.ProductName</td>
+                        <td class="fw-bolder text-dark text-center">@product.Quantity</td>
+                        <td class="text-center">@product.Price</td>
+                        <td class="text-center">
+                            <input type="number"
+                           @key="product.ProductId"
+                                   min="0"
+                           @bind-value="product.Quantity"
+                           @bind-value:event="oninput"
+                                   class="rounded-pill text-center align-baseline fw-bold text-success p-2" style="max-width:500px; border-color:darkblue;" />
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-outline-danger" @onclick="()=> RemoveProductFromCustomer(product)">
+                                -
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+        <div class="table-borderless text-end m-2 p-1 align-baseline">
+            Total
+            <span class="text-primary fw-bold">
+                @customerProductsDto.Sum(cp => cp.Price * cp.Quantity).ToString("c2")
+            </span>
+            /
+            <span class="text-secondary">
+                (@customerProductsDto.Sum(p=>p.Quantity)) lisense
+            </span>
+        </div>
+    </div>  
+    <!-- Database Product -->
+    <div class="card d-flex justify-content-between">
+    <table class="table table-borderless align-baseline ">
+
+        <thead>
+            <tr>
+                <th hidden>Product ID</th>
+                <th>Product Name</th>
+                <th>Remaining</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in comparedProductsDto)
+            {
+                <tr>
+                    <td hidden>@product.ProductId</td>
+                    <td>@product.ProductName</td>
+                    <td class="fw-bolder text-dark text-center">@product.Remaining</td>
+                    <td class="text-center">@product.Price</td>
+                        <td class="text-center">
+                        <input type="number"
+                       @key="product.ProductId"
+                               min="0"
+                       @bind-value="product.Remaining"
+                       @bind-value:event="oninput" 
+                               class="rounded-pill text-center align-baseline fw-bold text-success p-2" style="max-width:500px; border-color:darkblue;" />
+                    </td>
+                        <td class="text-center">
+                        <button class="btn btn-outline-success" @onclick="()=> AddProductToCustomer(product)">
+                            +
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </div>
+    <!-- Save Print Undo -->
+    <div class="table-borderless text-end m-2 p-1 align-baseline">
+        <button class="btn btn-outline-light"><i class="fas fa-undo text-secondary"></i></button>
+        <button class="btn btn-outline-light"><i class="fas fa-save text-success"></i></button>
+        <button class="btn btn-outline-light"><i class="fas fa-print text-primary" @onclick="ShowPrintPreview"></i></button>
+    </div>
+    <!-- Purchase Order-->
+    @if (showPrintPreview)
+    {
+        <div class="row">
+            <div class="card">
+                <div class="card-header">Print Preview - Customer Products</div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered print-preview-table">
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var product in customerProductsDto)
+                                {
+                                    <tr>
+                                        <td>@product.ProductName</td>
+                                        <td>@product.Price.ToString("c2")</td>
+                                        <td>@product.Quantity</td>
+                                        <td>@((product.Price * product.Quantity).ToString("c2"))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="print-preview-total">Total:</td>
+                                    <td>@customerProductsDto.Sum(p=>p.Price * p.Quantity).ToString("c2")</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+
+}
+@code {
+
+    [Parameter]
+    public int GroupId { get; set; } //comming from outside (Parrent)
+    [Parameter]
+    public int CustomerId { get; set; }//comming from outside (Parrent)
+
+    private Group group = new Group();
+
+    private List<CustomerProductDto> customerProductsDto { get; set; } = new List<CustomerProductDto>();
+    private List<ProductFromDbDto> productFromDbDto { get; set; } = new List<ProductFromDbDto>();
+    private List<CompareProductDto> comparedProductsDto { get; set; } = new List<CompareProductDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (CustomerId > 0)
+        {
+            group = await _IGetGroupWithProductsByCustomerIdAndGroupIdUC.ExecuteAsync(CustomerId, GroupId);
+            if (group != null)
+            {
+                customerProductsDto = group.GroupProducts.Select(groupProduct => new CustomerProductDto
+                    {
+                        ProductId = groupProduct.Product.ProductId,
+                        ProductName = groupProduct.Product.ProductName,
+                        Price = groupProduct.Product.Price,
+                        Quantity = groupProduct.Quantity
+                    }).ToList();
+            }
+            var productFromDb = await _IGetAllProductFromDbAsyncUC.ExecuteAsync();
+            if (productFromDb != null)
+            {
+                productFromDbDto = productFromDb.Select(p => new ProductFromDbDto
+                    {
+                        ProductId = p.ProductId,
+                        ProductName = p.ProductName,
+                        Remaining = 1,
+                        Price = p.Price
+                    })
+                .ToList();
+
+
+            }
+            if (productFromDb != null && group != null)
+            {
+                var comparer = new ProductIdEqualityComparer();
+                comparedProductsDto = productFromDb
+                    .Except(group.GroupProducts.Select(gp => gp.Product), comparer)
+                    .Select(product => new CompareProductDto
+                        {
+                            ProductId = product.ProductId,
+                            ProductName = product.ProductName,
+                            Price = product.Price,
+                            Remaining = 1 // Default remaining value
+                        })
+                    .ToList();
+            }
+        }
+    }
+
+    #region Form
+    private async Task ChangeGroupName()
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("showConfirmationDialog");
+
+        if (confirmed)
+        {
+            // User clicked OK
+            // Perform your action here
+            Console.WriteLine("User confirmed!");
+        }
+        else
+        {
+            // User clicked Cancel
+            Console.WriteLine("User canceled.");
+        }
+    }
+    #endregion
+    #region Add Remove
+    private void AddProductToCustomer(CompareProductDto product)
+    {
+        // Find the product in comparedProductsDto
+        var comparedProduct = comparedProductsDto.FirstOrDefault(cp => cp.ProductId == product.ProductId);
+
+        if (comparedProduct != null)
+        {
+            // Add the selected product to the customer's list
+            customerProductsDto.Add(new CustomerProductDto
+                {
+                    ProductId = comparedProduct.ProductId,
+                    ProductName = comparedProduct.ProductName,
+                    Price = comparedProduct.Price,
+                    Quantity = 1 // You can set the initial quantity here
+                });
+            comparedProductsDto.Remove(comparedProduct);
+
+            // Recalculate totals
+            CalculateTotals();
+        }
+    }
+
+    private void RemoveProductFromCustomer(CustomerProductDto product)
+    {
+        // Find the product in customerProductsDto
+        var customerProduct = customerProductsDto.FirstOrDefault(cp => cp.ProductId == product.ProductId);
+
+        if (customerProduct != null)
+        {
+            // Add the selected product back to comparedProductsDto
+            comparedProductsDto.Add(new CompareProductDto
+                {
+                    ProductId = customerProduct.ProductId,
+                    ProductName = customerProduct.ProductName,
+                    Price = customerProduct.Price,
+                    Remaining = 1 // You can set the remaining value here
+                });
+
+            // Remove the product from the customer's list
+            customerProductsDto.Remove(customerProduct);
+
+            // Recalculate totals
+            CalculateTotals();
+        }
+    }
+
+    private void UpdateTotals()
+    {
+        CalculateTotalss();
+    }
+    private void CalculateTotalss()
+    {
+        subtotal = customerProductsDto.Sum(cp => cp.Price * cp.Quantity);
+        total = subtotal;
+
+        StateHasChanged(); // Trigger a UI update
+    }
+
+    #endregion
+
+    #region Helper Method
+    private decimal subtotal;
+    private decimal total;
+
+    private void CalculateTotals()
+    {
+        subtotal = customerProductsDto.Sum(cp => cp.Price * cp.Quantity);
+        total = subtotal;
+    }
+
+    #endregion
+
+    #region Print
+    private bool showPrintPreview = false;
+
+    private void ShowPrintPreview()
+    {
+        showPrintPreview = true;
+    }
+    #endregion
+    
+
+    #region Dto
+    private class CustomerProductDto
+    {
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public decimal Price { get; set; }
+        public int Quantity { get; set; }
+    }
+
+    private class ProductFromDbDto
+    {
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public int Remaining { get; set; }
+        public decimal Price { get; set; }
+    }
+
+    private class CompareProductDto
+    {
+        public int ProductId { get; set; }
+        public string ProductName { get; set; }
+        public decimal Price { get; set; }
+        public int Remaining { get; set; }
+    }
+
+    private class ProductIdEqualityComparer : IEqualityComparer<Product>
+    {
+        public bool Equals(Product x, Product y)
+        {
+            if (x == null && y == null)
+                return true;
+            if (x == null || y == null)
+                return false;
+            return x.ProductId == y.ProductId;
+        }
+
+        public int GetHashCode(Product obj)
+        {
+            return obj.ProductId.GetHashCode();
+        }
+    }
+
+    #endregion
+}
+
+
+
+
+
+@*
+    We recive the GroupId and CustomerId as parameter comming from Parrent Pagr
+    Then we can use This GroupId to get all products
+*@
+

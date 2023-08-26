@@ -13,20 +13,22 @@ namespace MLicensemanager.SqlServerPlug.Repositories
 {
     public class ProductRepositoy : IProductRepositoy
     {
-        private readonly LMSDbContext _dbContext;
+        private readonly IDbContextFactory<LMSDbContext> _dbContextFactory;
 
-        public ProductRepositoy(LMSDbContext dbContext)
+        public ProductRepositoy(IDbContextFactory<LMSDbContext> dbContextFactory)
         {
-            _dbContext = dbContext;
+            _dbContextFactory= dbContextFactory;
         }
 
         public async Task<List<Product>> GetAllProductsAsync()
-        {
+        {  
+            using var _dbContext =_dbContextFactory.CreateDbContext();
             return await _dbContext.Products.ToListAsync();
         }
 
         public async Task<List<Product>> GetProductsForCustomerAndGroupAsync(int customerId, int groupId)
         {
+            using LMSDbContext _dbContext=_dbContextFactory.CreateDbContext();
             var products = await _dbContext.Groups
                 .Where(g => g.CustomerId == customerId && g.GroupId == groupId)
                 .SelectMany(g => g.GroupProducts.Select(gp => gp.Product))
