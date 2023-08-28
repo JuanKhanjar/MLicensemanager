@@ -1,4 +1,5 @@
 ﻿@page "/group/{CustomerId:int}/{GroupId:int}"
+@layout CustomLOut
 @inject IGetGroupWithProductsByCustomerIdAndGroupIdUC _IGetGroupWithProductsByCustomerIdAndGroupIdUC
 @inject IGetAllProductFromDbAsyncUC _IGetAllProductFromDbAsyncUC
 @using System.Linq
@@ -174,6 +175,7 @@
     }
 
 }
+
 @code {
 
     [Parameter]

@@ -1,4 +1,5 @@
 ﻿@page "/customer/{CustomerId:int}"
+
 <PageTitle>Customer</PageTitle>
 @inject IGetCustomerByIdAsyncUC _CustomerByIdUC
 @inject NavigationManager Navigation
@@ -67,11 +68,12 @@
                                 </tfoot>
                             </table>
                             <div>
-                                <NavLink 
+                                @*<NavLink  
                                     class="btn btn-outline-light"     
                                     href="@($"/group/{Customer.CustomerId}/{@group.GroupId}")">
                                     <i class="fas fa-edit text-secondary"></i>
-                                </NavLink>
+                                </NavLink>*@
+                                <button class="btn " @onclick="(() => NavigateToGroupPage(group.GroupId))">nav</button>
                             </div>
                         </div>
                     </div>
@@ -107,6 +109,11 @@ else
     private async Task ToggleProducts(int groupId)
     {
         await JSRuntime.InvokeVoidAsync("toggleGroupDetails", groupId);
+    }
+
+    private void NavigateToGroupPage(int groupid)
+    {
+        Navigation.NavigateTo($"/group/{CustomerId}/{groupid}",forceLoad:true);
     }
 }
 
