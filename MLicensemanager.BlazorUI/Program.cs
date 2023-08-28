@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
 using MLicensemanager.BlazorUI.Data;
+using MLicensemanager.BlazorUI.HttpServices;
+using MLicensemanager.BlazorUI.HttpServicesServices;
 using MLicensemanager.SqlServerPlug.Data;
 using MLicensemanager.SqlServerPlug.Repositories;
 using MLicensemanager.UseCases.CustomersUC;
@@ -11,6 +14,7 @@ using MLicensemanager.UseCases.GroupsUC.GroupUCIntefaces;
 using MLicensemanager.UseCases.PluginsInterfaces;
 using MLicensemanager.UseCases.ProductsUC;
 using MLicensemanager.UseCases.ProductsUC.PorductsUCInterfaces;
+
 
 namespace MLicensemanager.BlazorUI
 {
@@ -40,6 +44,21 @@ namespace MLicensemanager.BlazorUI
             builder.Services.AddTransient<IGetProductsForCustomerAndGroupAsyncUC, GetProductsForCustomerAndGroupAsyncUC>();
 
 
+           
+            // Add services to the container.
+            builder.Services.AddHttpClient();
+            builder.Services.AddScoped<IGroupService, GroupService>();
+            builder.Services.AddTransient<IWebApiExecuter, WebApiExecuter>();
+            builder.Services.AddHttpClient("Group", httpClient =>
+            {
+                httpClient.BaseAddress = new Uri("https://localhost:7279/api/");
+
+                // using Microsoft.Net.Http.Headers;
+                // The GitHub API requires two headers.
+                httpClient.DefaultRequestHeaders.Add(
+                    HeaderNames.Accept, "application/json");
+            });
+            
 
             var app = builder.Build();
 

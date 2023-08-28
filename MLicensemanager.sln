@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestMyFunctionsConsoleApp",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MLicensemanager.ServiceCLS", "MLicensemanager.ServiceCLS\MLicensemanager.ServiceCLS.csproj", "{490BCBC4-7E76-41E0-AF09-576375596AD4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MLicensemanager.Api", "MLicensemanager.Api\MLicensemanager.Api.csproj", "{C3850970-AAD6-47B5-9117-8F74FECC2656}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{490BCBC4-7E76-41E0-AF09-576375596AD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{490BCBC4-7E76-41E0-AF09-576375596AD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{490BCBC4-7E76-41E0-AF09-576375596AD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3850970-AAD6-47B5-9117-8F74FECC2656}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3850970-AAD6-47B5-9117-8F74FECC2656}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3850970-AAD6-47B5-9117-8F74FECC2656}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3850970-AAD6-47B5-9117-8F74FECC2656}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

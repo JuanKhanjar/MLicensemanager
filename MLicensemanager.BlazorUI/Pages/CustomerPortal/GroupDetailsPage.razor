@@ -2,35 +2,39 @@
 @inject IGetGroupWithProductsByCustomerIdAndGroupIdUC _IGetGroupWithProductsByCustomerIdAndGroupIdUC
 @inject IGetAllProductFromDbAsyncUC _IGetAllProductFromDbAsyncUC
 @using System.Linq
+@using MLicensemanager.BlazorUI.HttpServices;
 @inject Microsoft.JSInterop.IJSRuntime JSRuntime
+@inject IWebApiExecuter _IWebApiExecuter
 
 <PageTitle>Group Details</PageTitle>
 
 <p>Customer Id:@CustomerId</p>
 <p>Group Id:@GroupId</p>
 <!-- Form to Change Group Name -->
-<div class="row m-4 d-flex justify-content-center align-baseline">
-    <div class="">
-        <div class="card-body">
-            <EditForm Model="@group" OnValidSubmit="ChangeGroupName">
+<div class="row m-4">
+
+    <div class=" ">
+        <EditForm Model="@group" OnValidSubmit="ChangeGroupName" class="d-flex justify-content-evenly  align-content-center align-baseline">
                 <DataAnnotationsValidator />
+                   @* <InputNumber @bind-Value="group.GroupId" hidden /> *@
                 <div class="mb-3">
                     <label for="newGroupName" class="form-label">New Group Name</label>
                     <InputText id="newGroupName" class="form-control" @bind-Value="group.GroupName" />
                     <ValidationMessage For="@(() => group.GroupName)" />
                 </div>
-                <div>
-                    <label>EAN</label>
-                    <input type="text" @bind="@group.EAN" disabled />
+                <div class="mb-3">
+                <label class="form-label">EAN</label>
+                    <input type="text" @bind="@group.EAN" disabled class="form-control" />
                 </div>
-                <div>
-                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <div class="d-flex align-items-center mt-3">
+                <button type="submit" class="btn btn-outline-light "><i class="fas fa-save text-success"></i></button>
+                <button type="submit" class="btn btn-outline-light "><i class="fas fa-trash text-danger"></i></button>
                 </div>
             </EditForm>
-            
         </div>
-    </div>
+   
 </div>
+
 @if (customerProductsDto != null)
 {
     <!-- Customer Product -->
@@ -85,7 +89,7 @@
         </div>
     </div>  
     <!-- Database Product -->
-    <div class="card d-flex justify-content-between">
+    <div class="card d-flex justify-content-between mb-2">
     <table class="table table-borderless align-baseline ">
 
         <thead>
@@ -133,8 +137,7 @@
     <!-- Purchase Order-->
     @if (showPrintPreview)
     {
-        <div class="row">
-            <div class="card">
+            <div class="card d-flex justify-content-between mb-2">
                 <div class="card-header">Print Preview - Customer Products</div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -168,8 +171,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
     }
 
 }
@@ -233,22 +234,50 @@
     }
 
     #region Form
+    [CascadingParameter]
+    private TaskCompletionSource<bool> ReloadComponent { get; set; }
+
     private async Task ChangeGroupName()
     {
-        bool confirmed = await JSRuntime.InvokeAsync<bool>("showConfirmationDialog");
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirmSaveChanges", "Are you sure you want to change the group name?");
 
-        if (confirmed)
+        if (confirmed==true)
         {
-            // User clicked OK
-            // Perform your action here
-            Console.WriteLine("User confirmed!");
-        }
-        else
-        {
-            // User clicked Cancel
-            Console.WriteLine("User canceled.");
+            var updatedGroup = await _IWebApiExecuter.InvokeUpdate($"Customer/{group.GroupId}",group.GroupName);
+
+            if (updatedGroup != null)
+            {
+                // Handle successful update
+                await JSRuntime.InvokeVoidAsync("alert", "Group name changed successfully!");
+            }
+            else
+            {
+                // Handle error
+                await JSRuntime.InvokeVoidAsync("alert", "An error occurred while changing the group name.");
+            }
         }
     }
+
+    //private async Task ChangeGroupName()
+    //{
+    //    bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to change the group name?");
+
+    //    if (confirmed)
+    //    {
+    //        var g= await _IGroupService.UpdateGroupNameAsync(group);
+
+    //        if (g!=null)
+    //        {
+    //            ReloadComponent?.SetResult(true); // Notify the parent component to reload
+    //            await JSRuntime.InvokeVoidAsync("alert", "Group name changed successfully!");
+    //        }
+    //        else
+    //        {
+    //            await JSRuntime.InvokeVoidAsync("alert", "An error occurred while changing the group name.");
+    //        }
+    //    }
+    //}
+
     #endregion
     #region Add Remove
     private void AddProductToCustomer(CompareProductDto product)
@@ -377,8 +406,6 @@
 
     #endregion
 }
-
-
 
 
 

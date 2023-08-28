@@ -8,8 +8,8 @@
 
 @if (Customer != null)
 {
-    <div class="card">
-        <div class="card-body">
+    <div class="card m-2 card-header-pills text-center fw-bold text-dark p-1">
+        <div class="card-body d-flex justify-content-between ">
             <p class="card-text">Customer ID: @Customer.CustomerId</p>
             <p class="card-text">Name: @Customer.CustomerName</p>
             <p class="card-text">Address: @Customer.Address</p>
@@ -18,17 +18,17 @@
         </div>
     </div>
 
-
+<div class="card p-2">
     @if (Customer.Groups != null && Customer.Groups.Any())
     {
         <h4>Groups (@Customer.Groups.Count()) / @Customer.Groups.CalculateSubtotal().ToString("c2")</h4>
-        <div class="card">
+        
             @foreach (var group in Customer.Groups)
             {
                 <div class="mb-2">
                     <div class="card">
                         
-                        <div class="card-header">
+                        <div class="card-header d-flex justify-content-between">
                             <button class="btn btn-link" @onclick="() => ToggleProducts(group.GroupId)">
                                 @group.GroupName
                             </button>
@@ -36,8 +36,8 @@
                         </div>
                         
                         <div id="group-details-@group.GroupId" class="card-body">
-                            
-                            <table class="table table-bordered">
+
+                            <table class="table table-borderless">
                                 <!-- Product details -->
 
                                 <thead>
@@ -67,8 +67,10 @@
                                 </tfoot>
                             </table>
                             <div>
-                                <NavLink class=" nav-link" href="@($"/group/{Customer.CustomerId}/{@group.GroupId}")">
-                                <button class="btn btn-outline-success">Edit</button>
+                                <NavLink 
+                                    class="btn btn-outline-light"     
+                                    href="@($"/group/{Customer.CustomerId}/{@group.GroupId}")">
+                                    <i class="fas fa-edit text-secondary"></i>
                                 </NavLink>
                             </div>
                         </div>
@@ -76,12 +78,13 @@
 
                 </div>
             }
-        </div>
+        
     }
     else
     {
         <p>No groups found for this customer.</p>
     }
+    </div>
 }
 else
 {
