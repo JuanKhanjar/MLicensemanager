@@ -172,7 +172,7 @@ namespace MLicensemanager.ServiceCLS
         /// </example>
         public async Task<List<Product>> GetProductsNotInListAsync(List<Product> CustomerListOfProducts, List<Product> ListProductFromDb)
         {
-            var comparer = new ProductComparer();
+            var comparer = new ProductIdEqualityComparer();
             var productsNotInCustomerList = await Task.Run(() => ListProductFromDb.Except(CustomerListOfProducts, comparer).ToList());
             return productsNotInCustomerList;
         }

@@ -73,14 +73,20 @@
                                     href="@($"/group/{Customer.CustomerId}/{@group.GroupId}")">
                                     <i class="fas fa-edit text-secondary"></i>
                                 </NavLink>*@
-                                <button class="btn " @onclick="(() => NavigateToGroupPage(group.GroupId))">nav</button>
+                                <button class="btn btn-outline-secondary " 
+                                    @onclick="(() => NavigateToGroupPage(group.GroupId))">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary " @onclick="()=>ShowDeleteModal(group)">
+                            
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
 
                 </div>
             }
-        
     }
     else
     {
@@ -92,19 +98,45 @@ else
 {
     <p>Customer not found.</p>
 }
+<MLicensemanager.BlazorUI.Shared.Controls.DeleteGroupConfirmation groupToDelete="groupToDelete" IsOpen="showModal" OnDeleteConfirmed="HandleDeleteConfirmed" />
 
 @code {
+    private bool showModal = false;
+    private Group groupToDelete;
+    private void ShowDeleteModal(Group group)
+    {
+        groupToDelete = group; // Set the group to be deleted
+        showModal = true;
+    }
+    private async Task HandleDeleteConfirmed(Group groupToDelete)
+    {
+        // Perform deletion logic here
+        // For example, you can call a service method to delete the group and its products
+       // await YourService.DeleteGroupAndProductsAsync(groupToDelete);
+
+        // Close the modal after deletion
+        showModal = false;
+    }
 
     [Parameter]
     public int CustomerId { get; set; }
 
     private Customer? Customer { get; set; }
+
     protected override async Task OnInitializedAsync()
+    {
+        await LoadCustomerData();
+    }
+    private async Task LoadCustomerData()
     {
         if (CustomerId > 0)
         {
             Customer = await _CustomerByIdUC.ExecuteAsync(CustomerId);
         }
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+       await LoadCustomerData();
     }
     private async Task ToggleProducts(int groupId)
     {
@@ -113,11 +145,6 @@ else
 
     private void NavigateToGroupPage(int groupid)
     {
-        Navigation.NavigateTo($"/group/{CustomerId}/{groupid}",forceLoad:true);
+        Navigation.NavigateTo($"/group/{CustomerId}/{groupid}");
     }
 }
-
-@*
-    when a customer login we recieve the CustomerId as parameter 
-    based on that we can retrive all his Group 
-*@

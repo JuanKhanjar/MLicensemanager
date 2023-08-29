@@ -1,0 +1,74 @@
+﻿
+<div class="modal position-absolute" style="display: @(showModal ? "block":"none")">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                Confirm Deletion
+            </div>
+            <div class="modal-body">
+                @if (groupToDelete != null)
+                {
+                    <div>
+                        Are you sure you want to delete the group "@groupToDelete.GroupName" and all its products?
+                    </div>
+                    <div class="card d-flex justify-content-between mb-2">
+                        <table class="table table-borderless align-baseline">
+
+                            <thead>
+                                <tr>
+                                    <th hidden>Product ID</th>
+                                    <th>Product Name</th>
+                                    <th>Remaining</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var product in groupToDelete.GroupProducts)
+                                {
+                                    <tr>
+                                        <td hidden>@product.ProductId</td>
+                                        <td>@product.Product.ProductName</td>
+                                        <td class="fw-bolder text-dark text-center">@product.Quantity</td>
+                                        <td class="text-center">@product.Product.Price</td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                        <div class="table-borderless text-end m-2 p-1 align-baseline">
+                            Total
+                            <span class="text-primary fw-bold">
+                                @*@customerProductsDto.Sum(cp => cp.Price * cp.Quantity).ToString("c2")*@
+                                @groupToDelete.GroupProducts.Sum(cp=>cp.Quantity*cp.Product.Price).ToString("c");
+                            </span>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="() => showModal = false">Cancel</button>
+                <button class="btn btn-danger" @onclick="DeleteGroup">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public Group groupToDelete { get; set; } = new Group();
+    [Parameter] public bool IsOpen { get; set; } = false;
+    [Parameter] public EventCallback<Group> OnDeleteConfirmed { get; set; }
+
+    private bool showModal = false;
+
+    private async Task DeleteGroup()
+    {
+        await OnDeleteConfirmed.InvokeAsync(groupToDelete);
+    }
+
+    protected override void OnParametersSet()
+    {
+        showModal = IsOpen;
+    }
+}

@@ -39,7 +39,7 @@ namespace MLicensemanager.SqlServerPlug.Repositories
 
         public async Task<List<Product>> GetProductsNotInListAsync(List<Product> customerListOfProducts, List<Product> listProductFromDb)
         {
-            var comparer = new ProductComparer();
+            var comparer = new ProductIdEqualityComparer();
             var productsNotInCustomerList = listProductFromDb.Except(customerListOfProducts, comparer).ToList();
             return productsNotInCustomerList;
         }
